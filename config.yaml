@@ -1,0 +1,31 @@
+app:
+  title: "开发者 AI · 科技 · 世界新闻晨报"
+  language: "zh-CN"
+  timezone: "Asia/Shanghai"
+  max_items_total: 12
+  max_items_per_section: 5
+
+email:
+  subject_prefix: "🌅 每日晨报"
+
+sections:
+  - name: "AI / 大模型"
+    max_items: 5
+    feeds:
+      - "https://news.google.com/rss/search?q=OpenAI%20OR%20ChatGPT%20OR%20Anthropic%20OR%20Claude%20OR%20Gemini%20AI&hl=en-US&gl=US&ceid=US:en"
+      - "https://news.google.com/rss/search?q=AI%20model%20large%20language%20model&hl=en-US&gl=US&ceid=US:en"
+  - name: "科技新闻"
+    max_items: 5
+    feeds:
+      - "https://news.google.com/rss/search?q=technology%20news%20AI%20software%20cloud&hl=en-US&gl=US&ceid=US:en"
+      - "https://news.google.com/rss/search?q=GitHub%20VS%20Code%20Cursor%20developer%20tools&hl=en-US&gl=US&ceid=US:en"
+  - name: "世界重要新闻"
+    max_items: 5
+    feeds:
+      - "https://news.google.com/rss/search?q=world%20news%20international%20economy%20politics&hl=en-US&gl=US&ceid=US:en"
+      - "https://news.google.com/rss/headlines/section/topic/WORLD?hl=en-US&gl=US&ceid=US:en"
+  - name: "开发者资讯"
+    max_items: 5
+    feeds:
+      - "https://news.google.com/rss/search?q=Go%20Python%20PHP%20MySQL%20Redis%20Docker%20Kubernetes&hl=en-US&gl=US&ceid=US:en"
+      - "https://news.google.com/rss/search?q=Claude%20Code%20MCP%20Cursor%20VS%20Code&hl=en-US&gl=US&ceid=US:en"
