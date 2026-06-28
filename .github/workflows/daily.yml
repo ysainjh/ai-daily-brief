@@ -3,7 +3,7 @@ name: Daily News Email
 on:
   workflow_dispatch:
   schedule:
-    - cron: "30 23 * * *"  # 北京时间每天 7:30
+    - cron: "45 23 * * *"  # 北京时间每天 7:45
 
 jobs:
   send-news:
