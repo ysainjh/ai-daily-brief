@@ -36,11 +36,34 @@ GLOBAL_ONLY_KEYWORDS = [
 REQUEST_HEADERS = {
     "User-Agent": "Mozilla/5.0 (compatible; ai-daily-brief/1.0; +https://github.com/ysainjh/ai-daily-brief)"
 }
+DEFAULT_EDITORIAL_PROMPT = (
+    "你是给中国读者写每日要闻简报的中文新闻编辑。"
+    "请把新闻标题、摘要和关注理由改写成自然、克制、准确的简体中文。"
+    "人名、机构名、公司名、产品名、模型名、政策名、股票代码等专有名词不要硬翻译；"
+    "已有通行中文译名的国家、城市、国际组织可以使用中文。"
+    "不要夸张，不要编造 RSS 没有提供的信息。只输出 JSON。"
+)
 
 
 def load_config():
     with open(CONFIG_PATH, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
+
+
+def get_briefs(config):
+    briefs = config.get("briefs")
+    if briefs:
+        return briefs
+
+    return [{
+        "key": "default",
+        "title": config.get("app", {}).get("title", "每日简报"),
+        "subject_prefix": config.get("email", {}).get("subject_prefix", "每日简报"),
+        "to_env": "MAIL_TO",
+        "max_items_total": config.get("app", {}).get("max_items_total", 12),
+        "max_items_per_section": config.get("app", {}).get("max_items_per_section", 6),
+        "sections": config.get("sections", []),
+    }]
 
 
 def strip_html(value):
@@ -189,19 +212,18 @@ def dedupe_items(sections):
     return deduped_sections
 
 
-def fetch_news(config):
-    app_config = config.get("app", {})
-    default_limit = app_config.get("max_items_per_section", 6)
+def fetch_news(config, brief):
+    default_limit = brief.get("max_items_per_section", config.get("app", {}).get("max_items_per_section", 6))
     sections = []
 
-    for index, section_config in enumerate(config.get("sections", [])):
+    for index, section_config in enumerate(brief.get("sections", [])):
         sections.append({
             "name": section_config["name"],
             "items": fetch_section(section_config, index, default_limit),
         })
 
     sections = dedupe_items(sections)
-    max_total = app_config.get("max_items_total", 12)
+    max_total = brief.get("max_items_total", config.get("app", {}).get("max_items_total", 12))
     total = 0
     trimmed = []
 
@@ -220,18 +242,12 @@ def openai_configured():
     return bool(os.getenv("OPENAI_API_KEY"))
 
 
-def ask_ai_for_chinese(item):
+def ask_ai_for_chinese(item, brief):
     base_url = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1").rstrip("/")
     model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
     url = f"{base_url}/chat/completions"
 
-    system_prompt = (
-        "你是给中国读者写每日要闻简报的中文新闻编辑。"
-        "请把新闻标题、摘要和关注理由改写成自然、克制、准确的简体中文。"
-        "人名、机构名、公司名、产品名、模型名、政策名、股票代码等专有名词不要硬翻译；"
-        "已有通行中文译名的国家、城市、国际组织可以使用中文。"
-        "不要夸张，不要编造 RSS 没有提供的信息。只输出 JSON。"
-    )
+    system_prompt = brief.get("editorial_prompt", DEFAULT_EDITORIAL_PROMPT)
     user_prompt = {
         "section": item["section"],
         "title": item["title"],
@@ -275,13 +291,13 @@ def ask_ai_for_chinese(item):
     }
 
 
-def fallback_polish(item):
+def fallback_polish(item, brief):
     summary = item["summary"] or "暂无摘要，请阅读原文了解详情。"
-    why = "与全球或国内局势变化有关，值得跟进。"
+    why = brief.get("fallback_why", "与全球或国内局势变化有关，值得跟进。")
     return {**item, "summary": summary[:120], "why": why}
 
 
-def polish_sections(sections):
+def polish_sections(sections, brief):
     polished_sections = []
     use_ai = openai_configured()
 
@@ -290,11 +306,11 @@ def polish_sections(sections):
         for item in section["items"]:
             if use_ai:
                 try:
-                    polished_items.append(ask_ai_for_chinese(item))
+                    polished_items.append(ask_ai_for_chinese(item, brief))
                     continue
                 except Exception as exc:
                     print(f"AI polish failed for {item['title']}: {exc}")
-            polished_items.append(fallback_polish(item))
+            polished_items.append(fallback_polish(item, brief))
 
         polished_sections.append({**section, "items": polished_items})
 
@@ -316,7 +332,7 @@ def now_in_timezone(config):
         return datetime.now()
 
 
-def render(config, sections):
+def render(config, brief, sections):
     with open("templates/mail.html", "r", encoding="utf-8") as f:
         template = Template(f.read())
 
@@ -324,7 +340,7 @@ def render(config, sections):
     top_items = flatten_items(sections)[:5]
 
     return template.render(
-        title=config["app"]["title"],
+        title=brief.get("title", config.get("app", {}).get("title", "每日简报")),
         date=now.strftime("%Y年%m月%d日"),
         weekday=WEEKDAYS[now.weekday()],
         sections=sections,
@@ -332,18 +348,24 @@ def render(config, sections):
     )
 
 
-def send(config, html_body):
+def resolve_recipient(brief):
+    if brief.get("to"):
+        return brief["to"]
+    return os.getenv(brief.get("to_env", "MAIL_TO"))
+
+
+def send(config, brief, html_body):
     host = os.getenv("SMTP_HOST")
     port = int(os.getenv("SMTP_PORT", "465"))
     user = os.getenv("SMTP_USER")
     pwd = os.getenv("SMTP_PASSWORD")
     mail_from = os.getenv("MAIL_FROM", user)
-    mail_to = os.getenv("MAIL_TO")
+    mail_to = resolve_recipient(brief)
 
     if not all([host, user, pwd, mail_to]):
         raise RuntimeError("SMTP_HOST、SMTP_USER、SMTP_PASSWORD、MAIL_TO 必须配置完整")
 
-    subject_prefix = config.get("email", {}).get("subject_prefix", "每日简报")
+    subject_prefix = brief.get("subject_prefix", config.get("email", {}).get("subject_prefix", "每日简报"))
     subject = f"{subject_prefix} {now_in_timezone(config).strftime('%Y-%m-%d')}"
 
     msg = MIMEText(html_body, "html", "utf-8")
@@ -358,10 +380,11 @@ def send(config, html_body):
 
 def main():
     config = load_config()
-    sections = fetch_news(config)
-    sections = polish_sections(sections)
-    html_body = render(config, sections)
-    send(config, html_body)
+    for brief in get_briefs(config):
+        sections = fetch_news(config, brief)
+        sections = polish_sections(sections, brief)
+        html_body = render(config, brief, sections)
+        send(config, brief, html_body)
 
 
 if __name__ == "__main__":
