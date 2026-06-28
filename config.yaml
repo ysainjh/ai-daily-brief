@@ -31,10 +31,10 @@ briefs:
     title: "小学数学教育热点简报"
     subject_prefix: "小学数学教育热点简报"
     to: "18513544886@163.com"
-    max_items_total: 14
+    max_items_total: 19
     max_items_per_section: 5
-    fallback_why: "与小学数学教学、融合教育或 AI 教育实践有关，值得关注。"
-    editorial_prompt: "你是给中国小学数学教师和教育从业者写每日教育新闻简报的中文编辑。请把新闻标题、摘要和关注理由改写成自然、克制、准确的简体中文，突出小学数学教学、义务教育新课标、融合教育、特殊教育、AI 教育、教育数字化、课堂教学与教师发展等角度。人名、机构名、政策名、产品名、模型名等专有名词不要硬翻译。不要夸张，不要编造 RSS 没有提供的信息。只输出 JSON。"
+    fallback_why: "与教育政策、升学规划、课堂实践或家庭决策有关，值得关注。"
+    editorial_prompt: "你是给中国小学数学教师和教育从业者写每日教育新闻简报的中文编辑。请把新闻标题、摘要和关注理由改写成自然、克制、准确的简体中文，突出小学数学教学、义务教育新课标、融合教育、特殊教育、AI 教育、教育数字化、课堂教学、教师发展，以及北京落户、非京籍入学、随迁子女高考等家庭教育规划角度。人名、机构名、政策名、产品名、模型名等专有名词不要硬翻译。不要夸张，不要编造 RSS 没有提供的信息。只输出 JSON。"
     sections:
       - name: "小学数学教育热点"
         max_items: 5
@@ -51,3 +51,23 @@ briefs:
         feeds:
           - "https://news.google.com/rss/search?q=AI%E6%95%99%E8%82%B2%20%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD%20%E5%B0%8F%E5%AD%A6%20%E8%AF%BE%E5%A0%82%20when:7d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans"
           - "https://news.google.com/rss/search?q=%E6%95%99%E8%82%B2%E6%95%B0%E5%AD%97%E5%8C%96%20%E6%99%BA%E6%85%A7%E6%95%99%E8%82%B2%20%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%20when:7d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans"
+      - name: "北京落户与升学政策"
+        max_items: 5
+        pages:
+          - title: "北京市积分落户服务专栏"
+            url: "https://rsj.beijing.gov.cn/ywsite/jflh/fwzn/index.html"
+            source: "北京市人力资源和社会保障局"
+            summary: "北京市积分落户官方服务入口，关注申报通告、服务手册、公示名单和政策问答。"
+          - title: "北京市教育委员会官网：非京籍入学与义务教育入学政策"
+            url: "https://jw.beijing.gov.cn/"
+            source: "北京市教育委员会"
+            summary: "北京市教委官方入口，关注义务教育阶段入学工作意见、各区非京籍入学材料审核和入学服务政策。"
+          - title: "北京教育考试院：高招通知公告"
+            url: "https://www.bjeea.cn/html/gkgz/tzgg/index.html"
+            source: "北京教育考试院"
+            summary: "北京高招政策通知入口，关注随迁子女在京参加高等职业学校招生考试报名、资格审核和考试安排。"
+        feeds:
+          - "https://news.google.com/rss/search?q=%E5%8C%97%E4%BA%AC%20%E7%A7%AF%E5%88%86%E8%90%BD%E6%88%B7%20%E7%94%B3%E6%8A%A5%20%E6%94%BF%E7%AD%96%202026%20site%3Arsj.beijing.gov.cn%20when:30d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans"
+          - "https://news.google.com/rss/search?q=%E5%8C%97%E4%BA%AC%20%E9%9D%9E%E4%BA%AC%E7%B1%8D%20%E5%85%A5%E5%AD%A6%20%E5%9B%9B%E8%AF%81%20%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%202026%20site%3Ajw.beijing.gov.cn%20when:30d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans"
+          - "https://news.google.com/rss/search?q=%E5%8C%97%E4%BA%AC%20%E9%9A%8F%E8%BF%81%E5%AD%90%E5%A5%B3%20%E9%AB%98%E8%80%83%20%E9%AB%98%E8%81%8C%20%E6%8B%9B%E7%94%9F%E8%80%83%E8%AF%95%202026%20site%3Abjeea.cn%20when:30d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans"
+          - "https://news.google.com/rss/search?q=%E5%8C%97%E4%BA%AC%20%E5%A4%96%E5%9C%B0%E6%88%B7%E5%8F%A3%20%E4%B8%8A%E5%AD%A6%20%E9%AB%98%E8%80%83%20%E6%94%BF%E7%AD%96%202026%20when:30d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans"

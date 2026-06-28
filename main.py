@@ -123,6 +123,62 @@ def parse_feed(feed_url):
         return feedparser.parse("")
 
 
+def extract_page_title(content):
+    match = re.search(r"<title[^>]*>(.*?)</title>", content, flags=re.IGNORECASE | re.DOTALL)
+    if not match:
+        return ""
+    return strip_html(match.group(1))
+
+
+def extract_page_summary(content):
+    match = re.search(
+        r'<meta[^>]+name=["\']description["\'][^>]+content=["\']([^"\']+)["\']',
+        content,
+        flags=re.IGNORECASE,
+    )
+    if match:
+        return strip_html(match.group(1))[:400]
+
+    text = strip_html(content)
+    return text[:400]
+
+
+def fetch_page_item(page, section_name, section_index):
+    url = page.get("url")
+    if not url:
+        return None
+
+    try:
+        response = requests.get(url, headers=REQUEST_HEADERS, timeout=30)
+        response.raise_for_status()
+        response.encoding = response.apparent_encoding or response.encoding
+        content = response.text
+    except Exception as exc:
+        print(f"Page fetch failed: {url} ({exc})")
+        content = ""
+
+    source = urlparse(url).netloc.replace("www.", "") or "政策页面"
+    title = page.get("title") or extract_page_title(content)
+    summary = page.get("summary") or extract_page_summary(content)
+    title = clean_title(title, source)
+
+    if not title:
+        return None
+
+    item = {
+        "title": title,
+        "link": url,
+        "summary": summary or "请阅读原文了解政策详情。",
+        "why": "",
+        "source": page.get("source", source),
+        "image": DEFAULT_IMAGE,
+        "section": section_name,
+        "published": page.get("published", ""),
+    }
+    item["score"] = score_item(item, section_index)
+    return item
+
+
 def score_item(item, section_index):
     text = f"{item['title']} {item['summary']}"
     score = 100 - section_index * 5
@@ -185,6 +241,11 @@ def fetch_section(section, section_index, default_limit):
                 "published": entry.get("published", ""),
             }
             item["score"] = score_item(item, section_index)
+            items.append(item)
+
+    for page in section.get("pages", []):
+        item = fetch_page_item(page, section["name"], section_index)
+        if item:
             items.append(item)
 
     items.sort(key=lambda item: item["score"], reverse=True)
