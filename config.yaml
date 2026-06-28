@@ -1,31 +1,23 @@
 app:
-  title: "开发者 AI · 科技 · 世界新闻晨报"
+  title: "每日要闻简报"
   language: "zh-CN"
   timezone: "Asia/Shanghai"
-  max_items_total: 12
-  max_items_per_section: 5
+  max_items_total: 14
+  max_items_per_section: 7
 
 email:
-  subject_prefix: "🌅 每日晨报"
+  subject_prefix: "每日要闻简报"
 
 sections:
-  - name: "AI / 大模型"
-    max_items: 5
-    feeds:
-      - "https://news.google.com/rss/search?q=OpenAI%20OR%20ChatGPT%20OR%20Anthropic%20OR%20Claude%20OR%20Gemini%20AI&hl=en-US&gl=US&ceid=US:en"
-      - "https://news.google.com/rss/search?q=AI%20model%20large%20language%20model&hl=en-US&gl=US&ceid=US:en"
-  - name: "科技新闻"
-    max_items: 5
-    feeds:
-      - "https://news.google.com/rss/search?q=technology%20news%20AI%20software%20cloud&hl=en-US&gl=US&ceid=US:en"
-      - "https://news.google.com/rss/search?q=GitHub%20VS%20Code%20Cursor%20developer%20tools&hl=en-US&gl=US&ceid=US:en"
   - name: "世界重要新闻"
-    max_items: 5
+    max_items: 7
     feeds:
-      - "https://news.google.com/rss/search?q=world%20news%20international%20economy%20politics&hl=en-US&gl=US&ceid=US:en"
-      - "https://news.google.com/rss/headlines/section/topic/WORLD?hl=en-US&gl=US&ceid=US:en"
-  - name: "开发者资讯"
-    max_items: 5
+      - "https://news.google.com/rss/headlines/section/topic/WORLD?hl=zh-CN&gl=CN&ceid=CN:zh-Hans"
+      - "https://news.google.com/rss/search?q=%E5%9B%BD%E9%99%85%20%E6%94%BF%E6%B2%BB%20%E7%BB%8F%E6%B5%8E%20%E5%A4%96%E4%BA%A4%20when:1d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans"
+      - "https://news.google.com/rss/search?q=world%20news%20geopolitics%20economy%20diplomacy%20when:1d&hl=en-US&gl=US&ceid=US:en"
+  - name: "国内重要新闻"
+    max_items: 7
     feeds:
-      - "https://news.google.com/rss/search?q=Go%20Python%20PHP%20MySQL%20Redis%20Docker%20Kubernetes&hl=en-US&gl=US&ceid=US:en"
-      - "https://news.google.com/rss/search?q=Claude%20Code%20MCP%20Cursor%20VS%20Code&hl=en-US&gl=US&ceid=US:en"
+      - "https://news.google.com/rss/headlines/section/topic/NATION?hl=zh-CN&gl=CN&ceid=CN:zh-Hans"
+      - "https://news.google.com/rss/search?q=%E4%B8%AD%E5%9B%BD%20%E6%97%B6%E6%94%BF%20%E7%BB%8F%E6%B5%8E%20%E6%B0%91%E7%94%9F%20when:1d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans"
+      - "https://news.google.com/rss/search?q=China%20policy%20economy%20society%20when:1d&hl=en-US&gl=US&ceid=US:en"
